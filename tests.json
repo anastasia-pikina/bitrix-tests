@@ -1,0 +1,313 @@
+[
+	{
+		"name": "Собираются логи nginx (access, error)",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "NGINX_LOGS"
+	},
+	{
+		"name": "Собираются логи php",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "PHP_LOGS"
+	},
+	{
+		"name": "Пройдена проверка системы",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "SYSTEM"
+	},
+	{
+		"name": "Настроено резервное копирование",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "BACKUP"
+	},
+	{
+		"name": "Удалены логи, adminer.php, файлы содержащие скрипты авторизации, дампы",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "DELETE_DEV_FILES"
+	},
+	{
+		"name": "Работают кроны (при наличии). Собираются логи отработки",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CRON"
+	},
+	{
+		"name": "Работают очереди (при наличии)",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "QUEUES"
+	},
+	{
+		"name": "БД закрыта снаружи. Доступ только по localhost",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "DATABASE_CLOSE"
+	},
+	{
+		"name": "Установлен корректный owner для файлов проекта и гита",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CORRECT_OWNER"
+	},
+	{
+		"name": "Установлены корректные права на папки и файлы",
+		"criticality_level": "1",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CORRECT_RULES"
+	},
+	{
+		"name": "На бою установлена ветка master. Git status пустой. git pull не подтягивает новых изменений",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "GIT_PROD"
+	},
+	{
+		"name": "На тесте установлена ветка dev / stage. git status пустой. git pull не подтягивает новых изменений",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "GIT_DEV"
+	},
+	{
+		"name": "Креды к тестовой и боевой площадкам отличаются",
+		"criticality_level": "1",
+		"responsible": "Менеджер",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CREDENTIALS"
+	},
+	{
+		"name": "В шаблонах почтовых событий указаны корректные получатели",
+		"criticality_level": "1",
+		"responsible": "Менеджер",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CORRECT_MAIL_RECIPIENT"
+	},
+	{
+		"name": "Установлен корректный отправитель и получатель на настройках главного модуля",
+		"criticality_level": "1",
+		"responsible": "Менеджер",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CORRECT_MAIL_ADMIN_DEFAULT"
+	},
+	{
+		"name": "В настройках сайтов и главного модуля указаны домены соответствующие url сайта",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "Соответствует текущему домену",
+		"code": "DOMAIN"
+	},
+	{
+		"name": "В настройках сайтов и главного модуля указан корректный DOCUMENT_ROOT",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "Сравнивать с $_SERVER[\"\"DOCUMENT_ROOT\"\"]",
+		"code": "DOCUMENT_ROOT"
+	},
+	{
+		"name": "У кук стоит префикс #PROJECT#_PROD",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "",
+		"code": "COOKIES_PREFIX"
+	},
+	{
+		"name": "Отсутствует очередь писем на отправку",
+		"criticality_level": "1",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "Запросом получаешь кол-во записей из b_event c SUCCESS_EXEC != Y",
+		"code": "MAIL_QUEUE"
+	},
+	{
+		"name": "Данные авторизации админом занесены в passwork",
+		"criticality_level": "1",
+		"responsible": "Менеджер",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "ADMIN_PASSWORK"
+	},
+	{
+		"name": "Авторизация под кредами из passwork проходит успешно",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "ADMIN_PASSWORK_AUTH"
+	},
+	{
+		"name": "Валидный сертификат https (актуален минимум месяц)",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Auto",
+		"description": "https://stackoverflow.com/questions/30...url-in-php",
+		"code": "CERTIFICATE_HTTPS"
+	},
+	{
+		"name": "Работает отправка почты через b_event",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Автоматом отправить письмо. В подробностях результатов тестирования указать ссылку на деталку отправленного события в b_event",
+		"code": "B_EVENT_SEND"
+	},
+	{
+		"name": "Рекапча настроена на нужный домен и проходит валидацию",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "RECAPTCHA"
+	},
+	{
+		"name": "На тесторой площадке стоит галка Копия для разработки в настройках главного модуля. На проде не стоит",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Auto",
+		"description": "Тест определяем по переменной в env и домену",
+		"code": "COPY_DEVELOPMENT"
+	},
+	{
+		"name": "Отрабатывают бизнес важные сценарии, отсутствуют блокеры",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "SCENARIOS"
+	},
+	{
+		"name": "Отсутствуют явные php, стилевые, js ошибки на всех страницах сата",
+		"criticality_level": "1",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "ERRORS_PHP_CSS_JS"
+	},
+	{
+		"name": "Есть автообновление https сертификата",
+		"criticality_level": "2",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CERTIFICATE_HTTPS_AUTO_UPDATE"
+	},
+	{
+		"name": "Настроен мониторинг на 200 ответ по домену",
+		"criticality_level": "2",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "ANSWER_200"
+	},
+	{
+		"name": "Настроен мониторинг актуальности сертификата",
+		"criticality_level": "2",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CERTIFICATE_HTTPS_RELEVANCE"
+	},
+	{
+		"name": "Тестовый сайт закрыт http авторизацией",
+		"criticality_level": "2",
+		"responsible": "Админ",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "DEV_AUTH_HTTP"
+	},
+	{
+		"name": "Отрабатывает сборка и гитовые команды под юзером разработчика",
+		"criticality_level": "2",
+		"responsible": "Разработчик",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "GIT_DEVELOPER_USER"
+	},
+	{
+		"name": "Удалены тестовые данные",
+		"criticality_level": "2",
+		"responsible": "Менеджер",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "TEST_DATA_DELETE"
+	},
+	{
+		"name": "Работает CICD (при наличии gitlab-ci.yml)",
+		"criticality_level": "2",
+		"responsible": "Разработчик",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "CICD"
+	},
+	{
+		"name": "Включен журнал событий в битриксе",
+		"criticality_level": "2",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "/bitrix/admin/settings.php?lang=ru&mid=main&mid_menu=1 На вкладке журнал событий собирается статистика по всем чекбоксам",
+		"code": "BITRIX_EVENT_LOG"
+	},
+	{
+		"name": "Собираются события по инфоблоками в журнал событий",
+		"criticality_level": "2",
+		"responsible": "Разработчик",
+		"type": "Auto",
+		"description": "Выборка по ИБ. В каждом должна стоять галочка Сохранять в журнал событий",
+		"code": "EVENT_LOG_IBLOCK"
+	},
+	{
+		"name": "В robots.txt указан корректный домен. Для dev среды файл должен быть пустым. Файл должен быть в gitignore",
+		"criticality_level": "2",
+		"responsible": "QA",
+		"type": "Auto",
+		"description": "",
+		"code": "ROBOTS"
+	},
+	{
+		"name": "В sitemap*.xml указан корректный домен",
+		"criticality_level": "2",
+		"responsible": "QA",
+		"type": "Auto",
+		"description": "",
+		"code": "SITEMAP"
+	},
+	{
+		"name": "Проверить, что на тестовом сервере запрещена индексация или через robots или через X-Robots-Tag:noindex, nofollow, nosnippet, noarchive",
+		"criticality_level": "2",
+		"responsible": "QA",
+		"type": "Manual",
+		"description": "Отмечается вручную ответственным после настройки и проверки, что пункт выполнен",
+		"code": "DEV_NOINDEX"
+	}]
