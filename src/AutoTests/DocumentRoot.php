@@ -1,13 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace pwd\Tests\AutoTests;
 
-use Bitrix\Main\Config\Option;
 use pwd\Tests\AbstractAutoTests;
-use pwd\Tests\Helper;
 
 class DocumentRoot extends AbstractAutoTests
 {
-    function collectData(): void
+    public function collectData(): void
     {
         // sites DOCUMENT_ROOT
         $sites = \Bitrix\Main\SiteTable::getList([
@@ -20,16 +21,14 @@ class DocumentRoot extends AbstractAutoTests
         }
     }
 
-    function compare(): void
+    public function compare(): void
     {
         $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 
         if ($this->data['sites']) {
-
             $documentRootCheck = false;
 
             foreach ($this->data['sites'] as $sitedocumentRootID => $sitedocumentRoot) {
-
                 if ($sitedocumentRoot) {
                     if ($documentRoot === $sitedocumentRoot) {
                         $documentRootCheck = true;

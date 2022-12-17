@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace pwd\Tests\AutoTests;
 
 use Bitrix\Main\Config\Option;
@@ -7,23 +10,27 @@ use pwd\Tests\Helper;
 
 class Domain extends AbstractAutoTests
 {
-    function collectData(): void
+    public function collectData(): void
     {
-        $this->data['main'] = Option::get("main", "server_name");
+        $this->data['main'] = Option::get('main', 'server_name');
 
         // site domains
         $sites = \Bitrix\Main\SiteTable::getList([
             'filter' => ['ACTIVE' => 'Y'],
-            'select' => ['LID', 'SERVER_NAME', 'DOMAINS_' => 'DOMAINS'],
+            'select' => [
+                'LID',
+                'SERVER_NAME',
+                'DOMAINS_' => 'DOMAINS',
+            ],
             'runtime' => [
                 'DOMAINS' => [
                     'data_type' => '\Bitrix\Main\SiteDomainTable',
                     'reference' => [
                         '=this.LID' => 'ref.LID',
                     ],
-                    'join_type' => 'left'
-                ]
-            ]
+                    'join_type' => 'left',
+                ],
+            ],
         ]);
 
         while ($site = $sites->fetch()) {
@@ -34,7 +41,7 @@ class Domain extends AbstractAutoTests
         }
     }
 
-    function compare(): void
+    public function compare(): void
     {
         if ($this->data['main']) {
             if ($this->domain !== $this->data['main']) {
@@ -45,17 +52,25 @@ class Domain extends AbstractAutoTests
         }
 
         if ($this->data['sites']) {
-
             $serverNameCheck = false;
             $domainCheck = false;
 
             foreach ($this->data['sites'] as $siteDomainID => $site) {
-
-                if ($this->checkDomain($this->domain, $site['SERVER_NAME'], $siteDomainID, 'URL сервера') === true) {
+                if ($this->checkDomain(
+                        $this->domain,
+                        $site['SERVER_NAME'],
+                        $siteDomainID,
+                        'URL сервера'
+                    ) === true) {
                     $serverNameCheck = true;
                 }
 
-                if ($this->checkDomain($this->domain, $site['DOMAINS'], $siteDomainID, 'Доменное имя') === true) {
+                if ($this->checkDomain(
+                        $this->domain,
+                        $site['DOMAINS'],
+                        $siteDomainID,
+                        'Доменное имя'
+                    ) === true) {
                     $domainCheck = true;
                 }
             }
@@ -84,9 +99,8 @@ class Domain extends AbstractAutoTests
     {
         if ($comparison) {
             return Helper::checkIdentically($value, $comparison);
-        } else {
-            $this->result['errors'][] = $message . ' в настройках сайта "' . $siteID . '" не установлено.';
         }
+        $this->result['errors'][] = $message . ' в настройках сайта "' . $siteID . '" не установлено.';
 
         return false;
     }

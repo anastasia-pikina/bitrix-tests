@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pwd\Tests;
 
 use Bitrix\Main\EventManager;
-use pwd\Tests\GenerateTestList;
 
 class EventHandler
 {
@@ -17,7 +18,7 @@ class EventHandler
         $eventManager->addEventHandler(
             'main',
             'OnCheckListGet',
-            ['pwd\Tests\GenerateTestList', 'getTestList']
+            ['\pwd\Tests\GenerateTestList', 'getTestList']
         );
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pwd\Tests;
 
 class Helper
@@ -10,10 +12,13 @@ class Helper
      * @param array|string $comparison
      * @return bool результат сравнения
      */
-    public static function checkIdentically(string $value, $comparison): bool
+    public static function checkIdentically(
+        string $value,
+               $comparison
+    ): bool
     {
         if (is_array($comparison)) {
-            if(in_array($value, $comparison)) {
+            if (in_array($value, $comparison)) {
                 return true;
             }
         } else {
@@ -25,4 +30,25 @@ class Helper
         return false;
     }
 
+    public static function getFile($filePath, $fileName): array
+    {
+        $result = [];
+        $fileUrl = $filePath . $fileName;
+
+        if (!file_exists($fileUrl)) {
+            $result['errors'][] = 'Файл ' . $fileName . ' не найден.';
+            return $result;
+        }
+
+        $handle = @fopen($fileUrl, 'r');
+
+        if (!$handle) {
+            $result['errors'][] = 'Ошибка при чтении файла ' . $fileName . '.';
+            return $result;
+        }
+
+        $result['handle'] = $handle;
+
+        return $result;
+    }
 }
