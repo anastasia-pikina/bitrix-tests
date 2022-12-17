@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pwd\Tests;
 
 /**
  * @property string $testsFile
  * @property string $testsParentCode
  */
-
 class GenerateTestList
 {
     public static string $testsFile = __DIR__ . '/../tests.json';
+
     public static string $testsParentCode = 'PWD';
 
     /**
@@ -17,17 +19,21 @@ class GenerateTestList
      * @param array $arCheckList
      * @return array Массив со списком тестов
      */
-
-    static public function getTestList(array $arCheckList): array
+    static public function getTestList(
+        array $arCheckList
+    ): array
     {
-        $checkList = ['CATEGORIES' => [], 'POINTS' => []];
+        $checkList = [
+            'CATEGORIES' => [],
+            'POINTS' => [],
+        ];
 
-        $checkList['CATEGORIES'][self::$testsParentCode] = array(
+        $checkList['CATEGORIES'][self::$testsParentCode] = [
             'NAME' => 'Тесты PWD',
-            'LINKS' => ''
-        );
+            'LINKS' => '',
+        ];
 
-        if(file_exists(self::$testsFile)) {
+        if (file_exists(self::$testsFile)) {
             $tests = json_decode(file_get_contents(self::$testsFile));
 
             foreach ($tests as $test) {
