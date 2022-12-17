@@ -12,10 +12,12 @@ abstract class AbstractAutoTests
     protected array $data;
     protected array $result;
     protected string $domain;
+	protected string $protocol;
 
     public function __construct()
     {
-        $this->domain = $_SERVER['SERVER_NAME'];
+		$this->domain = $_SERVER['SERVER_NAME'];
+		$this->protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
     }
 
     /**

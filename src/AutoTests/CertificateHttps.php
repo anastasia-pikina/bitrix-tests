@@ -8,7 +8,7 @@ class CertificateHttps extends AbstractAutoTests
 {
     function collectData(): void
     {
-        $url = $_SERVER[HTTP_X_FORWARDED_PROTO] . '//' . $this->domain;
+        $url = $this->protocol . '//' . $this->domain;
         //$url = "https://gigant.ru";
         $context = stream_context_create ([
 			"ssl" => ["capture_peer_cert" => true]
