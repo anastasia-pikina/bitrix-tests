@@ -3,8 +3,8 @@
 namespace pwd\Tests\AutoTests;
 
 use Bitrix\Main\Config\Option;
-use pwd\Tests\AbstractAutoTests;
 use Bitrix\Main\Localization\Loc;
+use pwd\Tests\AbstractAutoTests;
 
 /**
  * @property array $eventLogSettings
@@ -38,13 +38,13 @@ class BitrixEventLog extends AbstractAutoTests
     public function collectData(): void
     {
 		foreach ($this->eventLogSettings as $settingCode => $setting) {
-			$this->data['setting'][$settingCode] = Option::get("main", $settingCode);
+			$this->data[$settingCode] = Option::get("main", $settingCode);
 		}
     }
 
 	function compare(): void
 	{
-		foreach ($this->data['setting'] as $settingCode => $setting) {
+		foreach ($this->data as $settingCode => $setting) {
 			if ($setting !== 'Y') {
 				$this->result['errors'][] = 'Не собирается статистика по "' . $this->eventLogSettings[$settingCode] . '".';
 			}
