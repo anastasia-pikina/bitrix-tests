@@ -49,11 +49,17 @@ class EventLogIblock extends AbstractAutoTests
 		if(!empty($this->data)) {
 			foreach ($this->data as $iblockID => $iblock) {
 				foreach($iblock['FIELDS'] as $fieldID => $fieldValue) {
-					if($fieldValue !== 'Y') {
-						$this->result['errors'][] = 'У инфоблока ' . $iblockID . ' не установлено "' . $this->iblockLogSettings[$fieldID] . '"';
+					if ($fieldValue !== 'Y') {
+
+						if (empty($this->result['errors'][$iblockID]['name'])) {
+							$this->result['errors'][$iblockID]['name'] = 'У инфоблока "' . $iblock['NAME'] . '" (ID: ' . $iblockID . ') не установлено:';
+						}
+						$this->result['errors'][$iblockID]['text'][] = '"' . $this->iblockLogSettings[$fieldID] . '"';
 					}
 				}
 			}
+		} else {
+			$this->result['message'][] = 'Не найдено ни одного инфоблока.';
 		}
 
 		parent::compare();
