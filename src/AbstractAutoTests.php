@@ -56,10 +56,8 @@ abstract class AbstractAutoTests
     public function prepareResult(): array
     {
         $message = '';
-
-        if (is_array($this->result['errors'])) {
-            $message = implode('<br>', $this->result['errors']);
-        }
+		$message .= $this->prepareMessage('message');
+		$message .= $this->prepareMessage('errors');
 
         return [
             'STATUS' => $this->result['status'],
@@ -69,4 +67,22 @@ abstract class AbstractAutoTests
             ],
         ];
     }
+
+	private function prepareMessage(string $type): string
+	{
+		$message = '';
+
+		if (!empty($this->result[$type])) {
+			foreach ($this->result[$type] as &$msg) {
+				if (!empty($msg['text'])) {
+					$msgName = $msg['name'] ? '<p><b>' . $msg['name'] . '</b></p>' : '';
+					$msg = $msgName . '<ol><li>' . implode('</li><li>', $msg['text']) . '</li></ol>';
+				}
+			}
+
+			$message .= '<ul><li>' . implode('</li><li>', $this->result[$type]) . '</li></ul>';
+		}
+
+		return $message;
+	}
 }
