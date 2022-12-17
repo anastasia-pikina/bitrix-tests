@@ -59,14 +59,20 @@ abstract class AbstractAutoTests
 		$message .= $this->prepareMessage('message');
 		$message .= $this->prepareMessage('errors');
 
-        return [
-            'STATUS' => $this->result['status'],
-            'MESSAGE' => [
-                'PREVIEW' => ($this->result['status'] === true) ? 'Тест пройден успешно!' : 'Тест  не пройден!',
-                'DETAIL' => $message,
-            ],
-        ];
-    }
+		return [
+			'STATUS' => $this->result['status'],
+			'MESSAGE' => [
+				'PREVIEW' => ($this->result['status'] === true) ? 'Тест пройден успешно!' : 'Тест  не пройден!',
+				'DETAIL' => $message,
+			],
+		];
+	}
+
+	/**
+	 * обраблотка сообщений результата выполнения
+	 * @param string $type
+	 * @return string
+	 */
 
 	private function prepareMessage(string $type): string
 	{
