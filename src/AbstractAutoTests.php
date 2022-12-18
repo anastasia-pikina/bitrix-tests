@@ -107,4 +107,22 @@ abstract class AbstractAutoTests
 
         return $message;
     }
+
+    public function isModeDev(): bool
+    {
+        if ($this->modeType === 'dev' || empty($this->modeType)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isModeProd(): bool
+    {
+        if ($this->modeType === 'prod') {
+            return true;
+        }
+
+        return false;
+    }
 }

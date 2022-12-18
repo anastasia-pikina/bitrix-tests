@@ -91,7 +91,7 @@ class Robots extends AbstractAutoTests
     {
         $robotsURL = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->fileRobotsName;
 
-        if ($this->modeType === 'dev') {
+        if ($this->isModeDev()) {
             if (!file_exists($robotsURL)) {
                 $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не найден.';
                 return;
