@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace pwd\Tests\AutoTests;
 
-use pwd\Tests\AbstractAutoTests;
-use pwd\Tests\Helper;
+use pwd\Tests\{AbstractAutoTests, Helper};
 
 /**
  * @property string $fileRobotsName
@@ -20,29 +19,7 @@ class Robots extends AbstractAutoTests
     public function collectData(): void
     {
         $this->getGitignoreData();
-
-        $robotsURL = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->fileRobotsName;
-
-        if ($this->modeType === 'dev') {
-            if (filesize($robotsURL) > 0) {
-                $this->result['errors'][] = $this->fileRobotsName . ' в режиме разработки должен быть пустой.';
-            }
-            return;
-        }
-
-        $file = Helper::getFile($_SERVER['DOCUMENT_ROOT'] . '/', $this->fileRobotsName);
-
-        if ($file['errors']) {
-            $this->result['errors'] = array_merge($this->result['errors'], $file['errors']);
-            return;
-        }
-
-        $hasHost = $this->getDataRobots($file['handle']);
-        fclose($file['handle']);
-
-        if ($hasHost === false) {
-            $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' директива HOST не найдена.';
-        }
+        $this->getRobotsData();
     }
 
     public function compare(): void
@@ -72,44 +49,13 @@ class Robots extends AbstractAutoTests
                 }
             }
 
-            // gitignote
+            // .gitignore
             if ($this->data['gitignore'] !== true) {
                 $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не находится в ' . $this->fileGitName . ' .';
             }
         }
 
         parent::compare();
-    }
-
-    /**
-     * данные о домене из robots.txt
-     * @param $handle
-     * @return bool
-     */
-    private function getDataRobots($handle): bool
-    {
-        while (($string = fgets($handle, 4096)) !== false) {
-            $result = preg_split("/[\s]+/", $string);
-
-            if ($result[0] !== 'Host:') {
-                continue;
-            }
-
-            if (empty($result[1])) {
-                $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
-                fclose($handle);
-                return true;
-            }
-
-            if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $result[1], $matches)) {
-                $this->data['protocol'] = $matches[1] ? str_replace('://', '', $matches[1]) : '';
-                $this->data['domain'] = $matches[2] ?? '';
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -135,5 +81,71 @@ class Robots extends AbstractAutoTests
         }
 
         fclose($file['handle']);
+    }
+
+    /**
+     * данные robots.txt
+     * @return void
+     */
+    private function getRobotsData(): void
+    {
+        $robotsURL = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->fileRobotsName;
+
+        if ($this->modeType === 'dev') {
+            if (!file_exists($robotsURL)) {
+                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не найден.';
+                return;
+            }
+
+            if (filesize($robotsURL) > 0) {
+                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' в режиме разработки должен быть пустой.';
+            }
+            return;
+        }
+
+        $file = Helper::getFile($_SERVER['DOCUMENT_ROOT'] . '/', $this->fileRobotsName);
+
+        if ($file['errors']) {
+            $this->result['errors'] = array_merge($this->result['errors'], $file['errors']);
+            return;
+        }
+
+        $hasHost = $this->prepareRobotsData($file['handle']);
+        fclose($file['handle']);
+
+        if ($hasHost === false) {
+            $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' директива HOST не найдена.';
+        }
+    }
+
+    /**
+     * данные о домене из robots.txt
+     * @param $handle
+     * @return bool
+     */
+    private function prepareRobotsData($handle): bool
+    {
+        while (($string = fgets($handle, 4096)) !== false) {
+            $result = preg_split("/[\s]+/", $string);
+
+            if ($result[0] !== 'Host:') {
+                continue;
+            }
+
+            if (empty($result[1])) {
+                $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
+                fclose($handle);
+                return true;
+            }
+
+            if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $result[1], $matches)) {
+                $this->data['protocol'] = $matches[1] ? str_replace('://', '', $matches[1]) : '';
+                $this->data['domain'] = $matches[2] ?? '';
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
