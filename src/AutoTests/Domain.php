@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace pwd\Tests\AutoTests;
 
 use Bitrix\Main\Config\Option;
-use pwd\Tests\AbstractAutoTests;
-use pwd\Tests\Helper;
+use pwd\Tests\{AbstractAutoTests, Helper};
 
 class Domain extends AbstractAutoTests
 {
