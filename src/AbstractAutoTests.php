@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace pwd\Tests;
 
+use function spaceonfire\Common\Env\env;
+
 /**
  * @property array $data
  * @property array $result
@@ -28,9 +30,7 @@ abstract class AbstractAutoTests
         $this->domain = $_SERVER['SERVER_NAME'];
         $this->protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
         $this->result['errors'] = [];
-        //$this->modeType = env('MODE_TYPE') ?? '';
-        //$this->modeType = '';
-        $this->modeType = 'prod';
+        $this->modeType = env('MODE_TYPE') ?? '';
     }
 
     /**
@@ -81,7 +81,7 @@ abstract class AbstractAutoTests
     }
 
     /**
-     * обраблотка сообщений результата выполнения
+     * обработка сообщений результата выполнения
      * @param string $type
      * @param string|null $title
      * @return string
@@ -108,6 +108,10 @@ abstract class AbstractAutoTests
         return $message;
     }
 
+    /**
+     * обраблотка режим разработки
+     * @return bool
+     */
     public function isModeDev(): bool
     {
         if ($this->modeType === 'dev') {
@@ -117,6 +121,10 @@ abstract class AbstractAutoTests
         return false;
     }
 
+    /**
+     * обраблотка режим прода
+     * @return bool
+     */
     public function isModeProd(): bool
     {
         if ($this->modeType === 'prod') {
@@ -126,6 +134,12 @@ abstract class AbstractAutoTests
         return false;
     }
 
+    /**
+     * добавляем ошибки в массив
+     * @param array $errors
+     * @param string $groupID
+     * @return void
+     */
     public function addErrors(array $errors, string $groupID): void
     {
         $errorsAdd[$groupID]['text'] = $errors;
