@@ -12,32 +12,7 @@ class Domain extends AbstractAutoTests
     public function collectData(): void
     {
         $this->data['main'] = Option::get('main', 'server_name');
-
-        // site domains
-        $sites = \Bitrix\Main\SiteTable::getList([
-            'filter' => ['ACTIVE' => 'Y'],
-            'select' => [
-                'LID',
-                'SERVER_NAME',
-                'DOMAINS_' => 'DOMAINS',
-            ],
-            'runtime' => [
-                'DOMAINS' => [
-                    'data_type' => '\Bitrix\Main\SiteDomainTable',
-                    'reference' => [
-                        '=this.LID' => 'ref.LID',
-                    ],
-                    'join_type' => 'left',
-                ],
-            ],
-        ]);
-
-        while ($site = $sites->fetch()) {
-            $this->data['sites'][$site['LID']]['SERVER_NAME'] = trim($site['SERVER_NAME']);
-            if ($site['DOMAINS_DOMAIN']) {
-                $this->data['sites'][$site['LID']]['DOMAINS'][] = trim($site['DOMAINS_DOMAIN']);
-            }
-        }
+        $this->data['sites'] = Helper::getSites();
     }
 
     public function compare(): void

@@ -15,31 +15,50 @@ class Sitemap extends AbstractAutoTests
 
     public function collectData(): void
     {
-        $dir = $_SERVER['DOCUMENT_ROOT'] . '/';
+        $sites = Helper::getSites();
 
-        foreach (glob($dir . '/' . $this->fileSitemapName) as $file) {
-            $filesSitemap = basename($file);
-            $reader = new \XMLReader;
-            $reader->open($dir . $filesSitemap);
+        foreach ($sites as $siteID => $site) {
+            if (empty($site['DOC_ROOT'])) {
+                $this->result['errors'][] = 'У сайта ' . $siteID . ' не указан путь к корневой папке.';
+                continue;
+            }
 
-            while ($reader->read()) {
-                if ($reader->nodeType === \XMLReader::ELEMENT && $reader->localName === 'loc') {
-                    $reader->read();
-                    if ($reader->nodeType === \XMLReader::TEXT && $reader->value) {
-                        $dataURL = Helper::getDataUrl($reader->value);
+            if (empty($site['DOMAINS'])) {
+                $this->result['errors'][] = 'У сайта ' . $siteID . ' не указано ни одного доменного имени.';
+                continue;
+            }
 
-                        if (!empty($dataURL)) {
-                            $this->data['sitemap'][$filesSitemap][] = [
-                                'protocol' => $dataURL['protocol'],
-                                'domain' => $dataURL['domain'],
-                                'value' => $reader->value,
-                            ];
+            $dir = $site['DOC_ROOT'] . '/';
+            $this->data['sitemap'][$siteID]['domains'] = $site['DOMAINS'];
+
+            foreach (glob($dir . $this->fileSitemapName) as $file) {
+                $filesSitemap = basename($file);
+                $reader = new \XMLReader;
+                $reader->open($dir . $filesSitemap);
+
+                while ($reader->read()) {
+                    if ($reader->nodeType === \XMLReader::ELEMENT && $reader->localName === 'loc') {
+                        $reader->read();
+                        if ($reader->nodeType === \XMLReader::TEXT && $reader->value) {
+                            $dataURL = Helper::getDataUrl($reader->value);
+
+                            if (!empty($dataURL)) {
+                                $this->data['sitemap'][$siteID]['files'][$filesSitemap][] = [
+                                    'protocol' => $dataURL['protocol'],
+                                    'domain' => $dataURL['domain'],
+                                    'value' => $reader->value,
+                                ];
+                            }
                         }
                     }
                 }
+
+                $reader->close();
             }
 
-            $reader->close();
+            if (empty($this->data['sitemap'][$siteID]['files'])) {
+                $this->result['message'][] = 'У сайта ' . $siteID . ' не найдено ни одного файла ' . $this->fileSitemapName . '.';
+            }
         }
     }
 
@@ -51,34 +70,37 @@ class Sitemap extends AbstractAutoTests
             return;
         }
 
-        foreach ($this->data['sitemap'] as $sitemapFile => $sitemapValues) {
+        foreach ($this->data['sitemap'] as $siteID => $siteSitemap) {
+            foreach ($siteSitemap['files'] as $sitemapFile => $sitemapValues) {
 
-            $fileErrors = [];
-            foreach ($sitemapValues as $url) {
+                $fileErrors = [];
+                foreach ($sitemapValues as $url) {
 
-                // protocol
-                if (empty($url['protocol'])) {
-                    $fileErrors[] = 'Протокол не указан (' . $url['value'] . ').';
-                } elseif ($url['protocol'] !== $this->protocol) {
-                    $fileErrors[] = 'Протокол указан неверно (' . $url['value'] . ').';
+                    // protocol
+                    if (empty($url['protocol'])) {
+                        $fileErrors[] = 'Протокол не указан (' . $url['value'] . ').';
+                    } elseif ($url['protocol'] !== $this->protocol) {
+                        $fileErrors[] = 'Протокол указан неверно (' . $url['value'] . ').';
+                    }
+
+                    // domain
+                    if (empty($url['domain'])) {
+                        $fileErrors[] = 'Домен не указан (' . $url['value'] . ').';
+                    } elseif (!in_array($url['domain'], $siteSitemap['domains'], false)) {
+                        $fileErrors[] = 'Домен указан неверно (' . $url['value'] . ').';
+                    }
                 }
 
-                // domain
-                if (empty($url['domain'])) {
-                    $fileErrors[] = 'Домен не указан (' . $url['value'] . ').';
-                } elseif ($url['domain'] !== $this->domain) {
-                    $fileErrors[] = 'Домен указан неверно (' . $url['value'] . ').';
+                if (!empty($fileErrors)) {
+                    $this->result['errors'][$sitemapFile] = [
+                        'name' => 'Файл ' . $sitemapFile . ' (сайт ' . $siteID . '):',
+                        'text' => $fileErrors,
+                    ];
                 }
-            }
-
-            if (!empty($fileErrors)) {
-                $this->result['errors'][$sitemapFile] = [
-                    'name' => 'Файл ' . $sitemapFile . ':',
-                    'text' => $fileErrors,
-                ];
             }
         }
 
+        ksort($this->result['errors']);
         parent::compare();
     }
 }

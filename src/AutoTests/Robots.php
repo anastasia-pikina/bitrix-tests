@@ -9,6 +9,7 @@ use pwd\Tests\{AbstractAutoTests, Helper};
 /**
  * @property string $fileRobotsName
  * @property string $fileGitName
+ * @property string $sites
  */
 class Robots extends AbstractAutoTests
 {
@@ -16,10 +17,20 @@ class Robots extends AbstractAutoTests
 
     private string $fileGitName = '.gitignore';
 
+    private array $sites;
+
+    public function __construct()
+    {
+        $this->sites = Helper::getSites();
+        parent::__construct();
+    }
+
     public function collectData(): void
     {
-        $this->getGitignoreData();
-        $this->getRobotsData();
+        foreach ($this->sites as $site) {
+            $this->getGitignoreData($site);
+            $this->getRobotsData($site);
+        }
     }
 
     public function compare(): void
@@ -29,35 +40,41 @@ class Robots extends AbstractAutoTests
             return;
         }
 
-        // protocol
-        if (isset($this->data['protocol'])) {
-            if ($this->data['protocol'] !== '') {
-                if ($this->data['protocol'] !== $this->protocol) {
-                    $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол указан неверно.
-                Указано: ' . $this->data['protocol'] . '. Верное значение: ' . $this->protocol;
+        foreach ($this->data as $siteID => $site) {
+            // protocol
+            if (isset($site['protocol'])) {
+                if ($site['protocol'] !== '') {
+                    if ($site['protocol'] !== $this->protocol) {
+                        $this->result['errors'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол указан неверно.
+                    Указано: ' . $site['protocol'] . '. Верное значение: ' . $this->protocol;
+                    }
+                } else {
+                    $this->result['message'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол не указан.';
                 }
-            } else {
-                $this->result['message'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол не указан.';
+            }
+
+            // domain
+            if (isset($site['domain'])) {
+                if ($site['domain'] !== '' && !empty($this->sites[$siteID]['DOMAINS'])) {
+                    if (!in_array($site['domain'], $this->sites[$siteID]['DOMAINS'], false)) {
+                        $this->result['errors'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен указан неверно.
+                    Указано: ' . $site['domain'] . '. Верное значение одно из: ' . implode(', ', $this->sites[$siteID]['DOMAINS']);
+                    }
+                } else {
+                    $this->result['errors'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
+                }
+            }
+
+            // .gitignore
+            if ($site['gitignore'] !== true) {
+                $this->result['errors'][$siteID]['text'][] = 'Файл ' . $this->fileRobotsName . ' не находится в ' . $this->fileGitName . ' .';
+            }
+
+            if (!empty($this->result['errors'][$siteID]['text'])) {
+                $this->result['errors'][$siteID]['name'] = 'Сайт ' . $siteID;
             }
         }
-
-        // domain
-        if (isset($this->data['domain'])) {
-            if ($this->data['domain'] !== '') {
-                if ($this->data['domain'] !== $this->domain) {
-                    $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен указан неверно.
-                Указано: ' . $this->data['domain'] . '. Верное значение: ' . $this->domain;
-                }
-            } else {
-                $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
-            }
-        }
-
-        // .gitignore
-        if ($this->data['gitignore'] !== true) {
-            $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не находится в ' . $this->fileGitName . ' .';
-        }
-
+        ksort($this->result['errors']);
         parent::compare();
     }
 
@@ -65,19 +82,27 @@ class Robots extends AbstractAutoTests
      * данные .gitignore
      * @return void
      */
-    private function getGitignoreData(): void
+    private function getGitignoreData($site): void
     {
-        $this->data['gitignore'] = false;
-        $file = Helper::getFile($_SERVER['DOCUMENT_ROOT'] . '/', $this->fileGitName);
+        if (empty($site['DOC_ROOT'])) {
+            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указан путь к корневой папке.';
+            return;
+        }
+
+        $this->data[$site['LID']]['gitignore'] = false;
+        $file = Helper::getFile($site['DOC_ROOT'] . '/', $this->fileGitName);
 
         if ($file['errors']) {
-            $this->result['errors'] = array_merge($this->result['errors'], $file['errors']);
+            $this->addErrors($file['errors'], $site['LID']);
+//            $errors[$site['LID']]['text'] = $file['errors'];
+//            $this->result['errors'] = array_merge($this->result['errors'], $errors);
+            $this->result['errors'][$site['LID']]['name'] = 'Сайт ' . $site['LID'];
             return;
         }
 
         while (($string = fgets($file['handle'], 4096)) !== false) {
             if (strpos($string, '/robots') === 0) {
-                $this->data['gitignore'] = true;
+                $this->data[$site['LID']]['gitignore'] = true;
                 fclose($file['handle']);
                 return;
             }
@@ -90,34 +115,49 @@ class Robots extends AbstractAutoTests
      * данные robots.txt
      * @return void
      */
-    private function getRobotsData(): void
+    private function getRobotsData($site): void
     {
-        $robotsURL = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->fileRobotsName;
+        if (empty($site['DOC_ROOT'])) {
+            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указан путь к корневой папке.';
+            return;
+        }
+
+        if (empty($site['DOMAINS'])) {
+            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указано ни одного доменного имени.';
+            return;
+        }
+
+        $dir = $site['DOC_ROOT'] . '/';
+        $robotsURL = $dir . $this->fileRobotsName;
 
         if ($this->isModeDev()) {
             if (!file_exists($robotsURL)) {
-                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не найден.';
+
+                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не найден (сайт ' . $site['LID'] . ').';
                 return;
             }
 
             if (filesize($robotsURL) > 0) {
-                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' в режиме разработки должен быть пустой.';
+                $this->result['errors'][] = 'Файл ' .
+                    $this->fileRobotsName . ' в режиме разработки должен быть пустой (сайт ' .
+                    $site['LID'] . ').';
             }
             return;
         }
 
-        $file = Helper::getFile($_SERVER['DOCUMENT_ROOT'] . '/', $this->fileRobotsName);
+        $file = Helper::getFile($dir, $this->fileRobotsName);
 
         if ($file['errors']) {
-            $this->result['errors'] = array_merge($this->result['errors'], $file['errors']);
+            $this->addErrors($file['errors'], $site['LID']);
+            $this->result['errors'][$site['LID']]['name'] = 'Сайт ' . $site['LID'];
             return;
         }
 
-        $hasHost = $this->prepareRobotsData($file['handle']);
+        $hasHost = $this->prepareRobotsData($file['handle'], $site['LID']);
         fclose($file['handle']);
 
         if ($hasHost === false) {
-            $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' директива HOST не найдена.';
+            $this->result['errors'][$site['LID']]['text'][] = 'В файле ' . $this->fileRobotsName . ' директива HOST не найдена.';
         }
     }
 
@@ -126,7 +166,7 @@ class Robots extends AbstractAutoTests
      * @param $handle
      * @return bool
      */
-    private function prepareRobotsData($handle): bool
+    private function prepareRobotsData($handle, $siteID): bool
     {
         while (($string = fgets($handle, 4096)) !== false) {
             $result = preg_split("/[\s]+/", $string);
@@ -143,11 +183,11 @@ class Robots extends AbstractAutoTests
 
             $dataRobots = Helper::getDataUrl($result[1]);
             if ($dataRobots['protocol']) {
-                $this->data['protocol'] = $dataRobots['protocol'];
+                $this->data[$siteID]['protocol'] = $dataRobots['protocol'];
             }
 
             if ($dataRobots['domain']) {
-                $this->data['domain'] = $dataRobots['domain'];
+                $this->data[$siteID]['domain'] = $dataRobots['domain'];
             }
 
             return true;
