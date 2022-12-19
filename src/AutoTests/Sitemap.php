@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace pwd\Tests\AutoTests;
 
-use pwd\Tests\{AbstractAutoTests};
+use pwd\Tests\{AbstractAutoTests, Helper};
 
 /**
  * @property string $fileSitemapName
@@ -25,14 +25,16 @@ class Sitemap extends AbstractAutoTests
             while ($reader->read()) {
                 if ($reader->nodeType === \XMLReader::ELEMENT && $reader->localName === 'loc') {
                     $reader->read();
-                    if ($reader->nodeType === \XMLReader::TEXT
-                        && preg_match('@^([(http(s*))://]*)?([^/]+)@i', $reader->value, $matches)
-                    ) {
-                        $this->data['sitemap'][$filesSitemap][] = [
-                            'protocol' => $matches[1] ? str_replace('://', '', $matches[1]) : '',
-                            'domain' => $matches[2] ?? '',
-                            'value' => $reader->value,
-                        ];
+                    if ($reader->nodeType === \XMLReader::TEXT && $reader->value) {
+                        $dataURL = Helper::getDataUrl($reader->value);
+
+                        if (!empty($dataURL)) {
+                            $this->data['sitemap'][$filesSitemap][] = [
+                                'protocol' => $dataURL['protocol'],
+                                'domain' => $dataURL['domain'],
+                                'value' => $reader->value,
+                            ];
+                        }
                     }
                 }
             }

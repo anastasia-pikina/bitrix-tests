@@ -29,8 +29,8 @@ abstract class AbstractAutoTests
         $this->protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
         $this->result['errors'] = [];
         //$this->modeType = getenv('MODE_TYPE');
-        //$this->modeType = 'prod';
-        $this->modeType = 'dev';
+        $this->modeType = 'prod';
+        //$this->modeType = 'dev';
     }
 
     /**

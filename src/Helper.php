@@ -30,7 +30,13 @@ class Helper
         return false;
     }
 
-    public static function getFile($filePath, $fileName): array
+    /**
+     * открытие и проверка файла на существование
+     * @param string $filePath
+     * @param string $fileName
+     * @return array
+     */
+    public static function getFile(string $filePath, string $fileName): array
     {
         $result = [];
         $fileUrl = $filePath . $fileName;
@@ -52,11 +58,21 @@ class Helper
         return $result;
     }
 
-    public static function getDataUrl(string $url)
+    /**
+     * извлечение из URL домена и протокола
+     * @param string $url
+     * @return array
+     */
+    public static function getDataUrl(string $url): array
     {
-        if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $reader->value, $matches)) {
+        if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $url, $matches)) {
+            return [
+                'protocol' => $matches[1] ? str_replace('://', '', $matches[1]) : '',
+                'domain' => $matches[2] ?? '',
+            ];
 
         }
 
+        return [];
     }
 }

@@ -141,9 +141,13 @@ class Robots extends AbstractAutoTests
                 return true;
             }
 
-            if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $result[1], $matches)) {
-                $this->data['protocol'] = $matches[1] ? str_replace('://', '', $matches[1]) : '';
-                $this->data['domain'] = $matches[2] ?? '';
+            $dataRobots = Helper::getDataUrl($result[1]);
+            if ($dataRobots['protocol']) {
+                $this->data['protocol'] = $dataRobots['protocol'];
+            }
+
+            if ($dataRobots['domain']) {
+                $this->data['domain'] = $dataRobots['domain'];
             }
 
             return true;

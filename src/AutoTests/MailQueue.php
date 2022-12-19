@@ -11,19 +11,26 @@ class MailQueue extends AbstractAutoTests
 {
     public function collectData(): void
     {
-        $this->data['mailCount'] = EventTable::getList([
-            'select' => ['COUNT'],
+        $this->data['letters'] = EventTable::getList([
+            'select' => ['SUCCESS_EXEC', 'COUNT'],
             'filter' => ['!SUCCESS_EXEC' => 'Y'],
             'runtime' => [
-                new \Bitrix\Main\Entity\ExpressionField('COUNT', 'COUNT(*)'),
+                new \Bitrix\Main\Entity\ExpressionField('COUNT', 'COUNT(%s)', ['SUCCESS_EXEC']),
             ],
-        ])->fetch()['COUNT'];
+        ])->fetchAll();
     }
 
     public function compare(): void
     {
-        if ($this->data['mailCount'] > 0) {
-            $this->result['errors'][] = 'В очереди на отправку ' . $this->data['mailCount'] . ' писем. Очередь должна быть пустая.';
+        if (!$this->data['letters']) {
+            parent::compare();
+            return;
+        }
+
+        foreach ($this->data['letters'] as $letterGroup) {
+            $this->result['errors'][] = 'Количество писем в очереди на отправку cо статусом ' .
+                $letterGroup['SUCCESS_EXEC'] . ': ' .
+                $letterGroup['COUNT'] . '.';
         }
 
         parent::compare();

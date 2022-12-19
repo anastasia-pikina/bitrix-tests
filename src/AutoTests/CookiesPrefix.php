@@ -8,12 +8,12 @@ use Bitrix\Main\Config\Option;
 use pwd\Tests\AbstractAutoTests;
 
 /**
- * @property string $cookiePrefix
+ * @property string $templatePrefix
  */
 
 class CookiesPrefix extends AbstractAutoTests
 {
-    private string $cookiePrefix = '#PROJECT#_PROD';
+    private string $templatePrefix = '#PROJECT#_PROD';
 
     public function collectData(): void
     {
@@ -28,8 +28,9 @@ class CookiesPrefix extends AbstractAutoTests
             return;
         }
 
-        if ($this->cookiePrefix !== $this->data['cookie']) {
-            $this->result['errors'][] = 'У cookie установлен неверный префикс (' . $this->data['cookie'] . ')';
+        if (!preg_match('@^([A-Z0-9]+)_PROD@i', $this->data['cookie'])) {
+            $this->result['errors'][] = 'У cookie установлен неверный префикс (' . $this->data['cookie'] . ').
+            Префикс должен соответствовать шаблону ' . $this->templatePrefix;
         }
 
         parent::compare();
