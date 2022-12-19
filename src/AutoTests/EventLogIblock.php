@@ -51,21 +51,23 @@ class EventLogIblock extends AbstractAutoTests
 
     public function compare(): void
     {
-        if (!empty($this->data)) {
-            foreach ($this->data as $iblockID => $iblock) {
-                foreach ($iblock['FIELDS'] as $fieldID => $fieldValue) {
-                    if ($fieldValue !== 'Y') {
-                        if (empty($this->result['errors'][$iblockID]['name'])) {
-                            $this->result['errors'][$iblockID]['name'] = 'У инфоблока "' . $iblock['NAME'] . '" (ID: ' . $iblockID . ') не установлено:';
-                        }
-                        $this->result['errors'][$iblockID]['text'][] = '"' . $this->iblockLogSettings[$fieldID] . '"';
-                    }
-				}
-			}
-		} else {
-			$this->result['message'][] = 'Не найдено ни одного инфоблока.';
-		}
+        if (empty($this->data)) {
+            $this->result['message'][] = 'Не найдено ни одного инфоблока.';
+            parent::compare();
+            return;
+        }
 
-		parent::compare();
-	}
+        foreach ($this->data as $iblockID => $iblock) {
+            foreach ($iblock['FIELDS'] as $fieldID => $fieldValue) {
+                if ($fieldValue !== 'Y') {
+                    if (empty($this->result['errors'][$iblockID]['name'])) {
+                        $this->result['errors'][$iblockID]['name'] = 'У инфоблока "' . $iblock['NAME'] . '" (ID: ' . $iblockID . ') не установлено:';
+                    }
+                    $this->result['errors'][$iblockID]['text'][] = '"' . $this->iblockLogSettings[$fieldID] . '"';
+                }
+            }
+        }
+
+        parent::compare();
+    }
 }
