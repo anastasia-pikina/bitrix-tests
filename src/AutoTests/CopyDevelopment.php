@@ -4,15 +4,31 @@ declare(strict_types=1);
 
 namespace pwd\Tests\AutoTests;
 
-class CopyDevelopment extends \pwd\Tests\AbstractAutoTests
+use Bitrix\Main\Config\Option;
+use pwd\Tests\AbstractAutoTests;
+
+class CopyDevelopment extends AbstractAutoTests
 {
 
     /**
      * @inheritDoc
      *
      */
-    public function collectData()
+    public function collectData(): void
     {
-        // TODO: Implement collectData() method.
+        $this->data['development'] = Option::get('main', 'update_devsrv');
+    }
+
+    public function compare(): void
+    {
+        if ($this->data['development'] !== 'Y' && $this->isModeDev()) {
+            $this->result['errors'][] = 'На тесторой площадке должна быть указана настрока "Установка для разработки" в настройках главного модуля.';
+        }
+
+        if ($this->data['development'] === 'Y' && $this->isModeProd()) {
+            $this->result['errors'][] = 'На прод площадке  не должна быть указана настрока "Установка для разработки" в настройках главного модуля.';
+        }
+
+        parent::compare();
     }
 }

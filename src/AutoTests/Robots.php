@@ -24,35 +24,38 @@ class Robots extends AbstractAutoTests
 
     public function compare(): void
     {
-        if (!empty($this->data)) {
-            // protocol
-            if (isset($this->data['protocol'])) {
-                if ($this->data['protocol'] !== '') {
-                    if ($this->data['protocol'] !== $this->protocol) {
-                        $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол указан неверно.
-                    Указано: ' . $this->data['protocol'] . '. Верное значение: ' . $this->protocol;
-                    }
-                } else {
-                    $this->result['message'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол не указан.';
-                }
-            }
+        if (empty($this->data)) {
+            parent::compare();
+            return;
+        }
 
-            // domain
-            if (isset($this->data['domain'])) {
-                if ($this->data['domain'] !== '') {
-                    if ($this->data['domain'] !== $this->domain) {
-                        $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен указан неверно.
-                    Указано: ' . $this->data['domain'] . '. Верное значение: ' . $this->domain;
-                    }
-                } else {
-                    $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
+        // protocol
+        if (isset($this->data['protocol'])) {
+            if ($this->data['protocol'] !== '') {
+                if ($this->data['protocol'] !== $this->protocol) {
+                    $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол указан неверно.
+                Указано: ' . $this->data['protocol'] . '. Верное значение: ' . $this->protocol;
                 }
+            } else {
+                $this->result['message'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST протокол не указан.';
             }
+        }
 
-            // .gitignore
-            if ($this->data['gitignore'] !== true) {
-                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не находится в ' . $this->fileGitName . ' .';
+        // domain
+        if (isset($this->data['domain'])) {
+            if ($this->data['domain'] !== '') {
+                if ($this->data['domain'] !== $this->domain) {
+                    $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен указан неверно.
+                Указано: ' . $this->data['domain'] . '. Верное значение: ' . $this->domain;
+                }
+            } else {
+                $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
             }
+        }
+
+        // .gitignore
+        if ($this->data['gitignore'] !== true) {
+            $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не находится в ' . $this->fileGitName . ' .';
         }
 
         parent::compare();

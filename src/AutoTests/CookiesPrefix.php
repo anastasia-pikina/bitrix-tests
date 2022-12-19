@@ -22,12 +22,14 @@ class CookiesPrefix extends AbstractAutoTests
 
     public function compare(): void
     {
-        if ($this->data['cookie']) {
-            if ($this->cookiePrefix !== $this->data['cookie']) {
-                $this->result['errors'][] = 'У cookie установлен неверный префикс (' . $this->data['cookie'] . ')';
-            }
-        } else {
+        if (empty($this->data['cookie'])) {
             $this->result['errors'][] = 'У cookie префикс в настройках главного модуля не установлен.';
+            parent::compare();
+            return;
+        }
+
+        if ($this->cookiePrefix !== $this->data['cookie']) {
+            $this->result['errors'][] = 'У cookie установлен неверный префикс (' . $this->data['cookie'] . ')';
         }
 
         parent::compare();

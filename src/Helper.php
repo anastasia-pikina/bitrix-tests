@@ -51,4 +51,12 @@ class Helper
 
         return $result;
     }
+
+    public static function getDataUrl(string $url)
+    {
+        if (preg_match('@^([(http(s*))://]*)?([^/]+)@i', $reader->value, $matches)) {
+
+        }
+
+    }
 }
