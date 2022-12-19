@@ -12,7 +12,6 @@ use function spaceonfire\Common\Env\env;
  * @property string $domain
  * @property string $protocol
  * @property string|null $modeType
- *
  */
 abstract class AbstractAutoTests
 {
