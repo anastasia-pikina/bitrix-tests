@@ -70,9 +70,56 @@ class Helper
                 'protocol' => $matches[1] ? str_replace('://', '', $matches[1]) : '',
                 'domain' => $matches[2] ?? '',
             ];
-
         }
 
         return [];
+    }
+
+    /**
+     * иполучение данных об активных сайтах
+     * @return array
+     */
+    public static function getSites(): array
+    {
+        $result = [];
+        $sites = \Bitrix\Main\SiteTable::getList([
+            'filter' => ['ACTIVE' => 'Y'],
+            'select' => [
+                'LID',
+                'SERVER_NAME',
+                'DOC_ROOT',
+                'DOMAINS_' => 'DOMAINS',
+            ],
+            'order' => ['LID' => 'ASC'],
+            'runtime' => [
+                'DOMAINS' => [
+                    'data_type' => '\Bitrix\Main\SiteDomainTable',
+                    'reference' => [
+                        '=this.LID' => 'ref.LID',
+                    ],
+                    'join_type' => 'left',
+                ],
+            ],
+        ]);
+
+        while ($site = $sites->fetch()) {
+            if (empty($result[$site['LID']]['SERVER_NAME'])) {
+                $result[$site['LID']]['SERVER_NAME'] = trim($site['SERVER_NAME']);
+            }
+
+            if (empty($result[$site['LID']]['DOC_ROOT'])) {
+                $result[$site['LID']]['DOC_ROOT'] = trim($site['DOC_ROOT']);
+            }
+
+            if (empty($result[$site['LID']]['LID'])) {
+                $result[$site['LID']]['LID'] = $site['LID'];
+            }
+
+            if ($site['DOMAINS_DOMAIN']) {
+                $result[$site['LID']]['DOMAINS'][] = trim($site['DOMAINS_DOMAIN']);
+            }
+        }
+
+        return $result;
     }
 }

@@ -28,9 +28,9 @@ abstract class AbstractAutoTests
         $this->domain = $_SERVER['SERVER_NAME'];
         $this->protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
         $this->result['errors'] = [];
-        //$this->modeType = getenv('MODE_TYPE');
+        //$this->modeType = env('MODE_TYPE') ?? '';
+        //$this->modeType = '';
         $this->modeType = 'prod';
-        //$this->modeType = 'dev';
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class AbstractAutoTests
 
     public function isModeDev(): bool
     {
-        if ($this->modeType === 'dev' || empty($this->modeType)) {
+        if ($this->modeType === 'dev') {
             return true;
         }
 
@@ -124,5 +124,11 @@ abstract class AbstractAutoTests
         }
 
         return false;
+    }
+
+    public function addErrors(array $errors, string $groupID): void
+    {
+        $errorsAdd[$groupID]['text'] = $errors;
+        $this->result['errors'] = array_merge($this->result['errors'], $errorsAdd);
     }
 }
