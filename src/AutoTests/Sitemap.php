@@ -19,12 +19,12 @@ class Sitemap extends AbstractAutoTests
 
         foreach ($sites as $siteID => $site) {
             if (empty($site['DOC_ROOT'])) {
-                $this->result['errors'][] = 'У сайта ' . $siteID . ' не указан путь к корневой папке.';
+                $this->result['errors']['all']['text'][] = 'У сайта ' . $siteID . ' не указан путь к корневой папке.';
                 continue;
             }
 
             if (empty($site['DOMAINS'])) {
-                $this->result['errors'][] = 'У сайта ' . $siteID . ' не указано ни одного доменного имени.';
+                $this->result['errors']['all']['text'][] = 'У сайта ' . $siteID . ' не указано ни одного доменного имени.';
                 continue;
             }
 
@@ -60,6 +60,10 @@ class Sitemap extends AbstractAutoTests
                 $this->result['message'][] = 'У сайта ' . $siteID . ' не найдено ни одного файла ' . $this->fileSitemapName . '.';
             }
         }
+
+        if (!empty($this->result['errors']['all']['text'])) {
+            $this->result['errors']['all']['name'] = 'Общие ошибки ';
+        }
     }
 
     public function compare(): void
@@ -86,7 +90,9 @@ class Sitemap extends AbstractAutoTests
                     // domain
                     if (empty($url['domain'])) {
                         $fileErrors[] = 'Домен не указан (' . $url['value'] . ').';
-                    } elseif (!in_array($url['domain'], $siteSitemap['domains'], false)) {
+                    } elseif (is_array($siteSitemap['domains']) &&
+                        !in_array($url['domain'], $siteSitemap['domains'], false)
+                    ) {
                         $fileErrors[] = 'Домен указан неверно (' . $url['value'] . ').';
                     }
                 }
