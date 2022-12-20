@@ -142,6 +142,10 @@ abstract class AbstractAutoTests
      */
     public function addErrors(array $errors, string $groupID): void
     {
+        if ($this->result['errors'][$groupID]['text']) {
+            $this->result['errors'][$groupID]['text'] = array_merge($this->result['errors'][$groupID]['text'], $errors);
+            return;
+        }
         $errorsAdd[$groupID]['text'] = $errors;
         $this->result['errors'] = array_merge($this->result['errors'], $errorsAdd);
     }

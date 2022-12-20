@@ -28,6 +28,11 @@ class Robots extends AbstractAutoTests
     public function collectData(): void
     {
         foreach ($this->sites as $site) {
+            if (empty($site['DOC_ROOT'])) {
+                $this->result['errors'][$site['LID']]['text'][] = 'У сайта ' . $site['LID'] . ' не указан путь к корневой папке.';
+                continue;
+            }
+
             $this->getGitignoreData($site);
             $this->getRobotsData($site);
         }
@@ -55,8 +60,8 @@ class Robots extends AbstractAutoTests
 
             // domain
             if (isset($site['domain'])) {
-                if ($site['domain'] !== '' && !empty($this->sites[$siteID]['DOMAINS'])) {
-                    if (!in_array($site['domain'], $this->sites[$siteID]['DOMAINS'], false)) {
+                if ($site['domain'] !== '') {
+                    if (is_array($this->sites[$siteID]['DOMAINS']) && !in_array($site['domain'], $this->sites[$siteID]['DOMAINS'], false)) {
                         $this->result['errors'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен указан неверно.
                     Указано: ' . $site['domain'] . '. Верное значение одно из: ' . implode(', ', $this->sites[$siteID]['DOMAINS']);
                     }
@@ -84,18 +89,11 @@ class Robots extends AbstractAutoTests
      */
     private function getGitignoreData($site): void
     {
-        if (empty($site['DOC_ROOT'])) {
-            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указан путь к корневой папке.';
-            return;
-        }
-
         $this->data[$site['LID']]['gitignore'] = false;
         $file = Helper::getFile($site['DOC_ROOT'] . '/', $this->fileGitName);
 
         if ($file['errors']) {
             $this->addErrors($file['errors'], $site['LID']);
-//            $errors[$site['LID']]['text'] = $file['errors'];
-//            $this->result['errors'] = array_merge($this->result['errors'], $errors);
             $this->result['errors'][$site['LID']]['name'] = 'Сайт ' . $site['LID'];
             return;
         }
@@ -117,13 +115,8 @@ class Robots extends AbstractAutoTests
      */
     private function getRobotsData($site): void
     {
-        if (empty($site['DOC_ROOT'])) {
-            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указан путь к корневой папке.';
-            return;
-        }
-
         if (empty($site['DOMAINS'])) {
-            $this->result['errors'][] = 'У сайта ' . $site['LID'] . ' не указано ни одного доменного имени.';
+            $this->result['errors'][$site['LID']]['text'][] = 'У сайта ' . $site['LID'] . ' не указано ни одного доменного имени.';
             return;
         }
 
@@ -132,15 +125,13 @@ class Robots extends AbstractAutoTests
 
         if ($this->isModeDev()) {
             if (!file_exists($robotsURL)) {
-
-                $this->result['errors'][] = 'Файл ' . $this->fileRobotsName . ' не найден (сайт ' . $site['LID'] . ').';
+                $this->result['errors'][$site['LID']]['text'][] = 'Файл ' . $this->fileRobotsName . ' не найден.';
                 return;
             }
 
             if (filesize($robotsURL) > 0) {
-                $this->result['errors'][] = 'Файл ' .
-                    $this->fileRobotsName . ' в режиме разработки должен быть пустой (сайт ' .
-                    $site['LID'] . ').';
+                $this->result['errors'][$site['LID']]['text'][] = 'Файл ' .
+                    $this->fileRobotsName . ' в режиме разработки должен быть пустой.';
             }
             return;
         }
@@ -176,8 +167,7 @@ class Robots extends AbstractAutoTests
             }
 
             if (empty($result[1])) {
-                $this->result['errors'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
-                fclose($handle);
+                $this->result['errors'][$siteID]['text'][] = 'В файле ' . $this->fileRobotsName . ' в директиве HOST домен не указан.';
                 return true;
             }
 
