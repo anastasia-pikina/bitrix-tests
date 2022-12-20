@@ -132,7 +132,7 @@
 		"criticality_level": "1",
 		"responsible": "Разработчик",
 		"type": "Auto",
-		"description": "Сравнивать с $_SERVER[\"\"DOCUMENT_ROOT\"\"]",
+		"description": "",
 		"code": "DOCUMENT_ROOT"
 	},
 	{
@@ -148,7 +148,7 @@
 		"criticality_level": "1",
 		"responsible": "Разработчик",
 		"type": "Auto",
-		"description": "Запросом получаешь кол-во записей из b_event c SUCCESS_EXEC != Y",
+		"description": "",
 		"code": "MAIL_QUEUE"
 	},
 	{
@@ -172,7 +172,7 @@
 		"criticality_level": "1",
 		"responsible": "QA",
 		"type": "Auto",
-		"description": "https://stackoverflow.com/questions/30...url-in-php",
+		"description": "",
 		"code": "CERTIFICATE_HTTPS"
 	},
 	{
@@ -196,7 +196,7 @@
 		"criticality_level": "1",
 		"responsible": "QA",
 		"type": "Auto",
-		"description": "Тест определяем по переменной в env и домену",
+		"description": "",
 		"code": "COPY_DEVELOPMENT"
 	},
 	{
@@ -276,7 +276,7 @@
 		"criticality_level": "2",
 		"responsible": "Разработчик",
 		"type": "Auto",
-		"description": "/bitrix/admin/settings.php?lang=ru&mid=main&mid_menu=1 На вкладке журнал событий собирается статистика по всем чекбоксам",
+		"description": "/bitrix/admin/settings.php?lang=ru&mid=main&mid_menu=1. На вкладке журнал событий собирается статистика по всем чекбоксам",
 		"code": "BITRIX_EVENT_LOG"
 	},
 	{
@@ -284,7 +284,7 @@
 		"criticality_level": "2",
 		"responsible": "Разработчик",
 		"type": "Auto",
-		"description": "Выборка по ИБ. В каждом должна стоять галочка Сохранять в журнал событий",
+		"description": "Выборка по ИБ. В каждом должны быть проставлены настройки 'Сохранять в журнал событий'",
 		"code": "EVENT_LOG_IBLOCK"
 	},
 	{

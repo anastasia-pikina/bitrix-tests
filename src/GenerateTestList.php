@@ -41,18 +41,19 @@ class GenerateTestList
                 $testData = [
                     'PARENT' => self::$testsParentCode,
                     'REQUIRE' => 'Y',
-                    'AUTO' => $test->type == 'Auto' ? 'Y' : 'N',
+                    'AUTO' => $test->type === 'Auto' ? 'Y' : 'N',
                     'NAME' => $test->name,
                     'DESC' => 'Ответственный: ' . $test->responsible,
                     'HOWTO' => $test->description,
+                    //'FAILED' => 'Y',
                 ];
 
-                if ($test->type == 'Auto' && $test->code) {
+                if ($test->type === 'Auto' && $test->code) {
                     $className = ucwords(strtolower(str_replace('_', ' ', $test->code)));
 
                     $className = __NAMESPACE__ . '\AutoTests\\' . str_replace(' ', '', $className);
 
-                    $testData['CLASS_NAME'] = __NAMESPACE__ . '\RunAutoTests';
+                    $testData['CLASS_NAME'] = RunAutoTests::class;
                     $testData['METHOD_NAME'] = 'run';
                     $testData['PARAMS'] = [
                         'class' => $className,
@@ -62,7 +63,6 @@ class GenerateTestList
                 $checkList['POINTS'][$test->code] = $testData;
             }
         }
-
         return $checkList;
     }
 
